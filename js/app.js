@@ -1,7 +1,51 @@
 /*
- * Create a list that holds all of your cards
- */
+* Class Card
+*
+* Represents a memory card on the playing board.
+*
+* A Card has the following properties
+* Symbol - The symbol to match
+*/
+var Card = function (symbol){
+	this.symbol = symbol;
+};
 
+/**
+* The symbols to display on the front of the card.
+* The symbols correspond to FontAwesome characters.
+*/
+Card.prototype.symbols = [
+	"anchor",
+	"bicycle",
+	"bolt",
+	"bomb",
+	"cube",
+	"diamond",
+	"leaf",
+	"paper-plane-o"
+];
+
+/**
+*  Do the cards match?  Compares symbols.
+*/
+Card.prototype.match = function(otherCard) {
+	return this.symbol === otherCard.symbol;
+}
+
+/*
+ * Create a list that holds all of your cards
+ * Loops through the set of symbols and creates
+ * a pair of cards for each symbol in the stack
+ */
+function createCards() {
+	const cards = [];
+	for (let i = 0; i < Card.prototype.symbols.length; i++){
+		// create a pair of identical cards and save them
+		let type = Card.prototype.symbols[i];
+		cards.push(new Card(type), new Card(type));
+	}
+	return cards;
+}
 
 /*
  * Display the cards on the page
@@ -25,6 +69,26 @@ function shuffle(array) {
     return array;
 }
 
+// Create and shuffle the cards
+const cards = shuffle(createCards());
+
+// loop through the cards and display them on the screen
+const fragment = document.createDocumentFragment();  // ← uses a DocumentFragment instead of a <div>
+
+for (let i = 0; i < cards.length; i++) {
+    const cardElem = document.createElement('i');
+    cardElem.className = `fa fa-${cards[i].symbol}`;
+	// create the wrapper and add the card element
+	const parentElem = document.createElement('li');
+    parentElem.className = "card";
+    parentElem.appendChild(cardElem);
+    // save the new elements
+    fragment.appendChild(parentElem);
+}
+
+// Add the cards to the page.
+const deck = document.querySelector('.deck')
+deck.appendChild(fragment);
 
 /*
  * set up the event listener for a card. If a card is clicked:
