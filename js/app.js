@@ -1,57 +1,149 @@
-/*
-* Class Card
+/**
+*	app.js - Memory Card Matching Game
+*   Author:  David J. Dickinson
+*   Contact: djdlearn@gmail.com
 *
-* Represents a memory card on the playing board.
-*
-* A Card has the following properties
-* Symbol - The symbol to match
-* DOM Element for this card (a list item)
+*	Javascript engine for the Memory Game.
 */
-var Card = function (id, symbol){
-	this.id = id;
+
+/**
+* 	Class: Card
+*
+* 	Represents a memory card on the playing board.
+*
+* 	A Card has the following properties:
+* 	symbol - The symbol to match
+* 	state - closed (-1), open (0), matched (1)
+*	elem - a DOM Element representing this card (a list item)
+* 	parentNode - A reference to the card's parent node - (the game board).
+*/
+var Card = function (id, symbol, parent){
+	this.parentNode = parent;
 	this.symbol = symbol;
-	const e = document.createElement('i');
-	e.className = `fa fa-${symbol}`;
-	this.elem = document.createElement('li');
-	this.elem.className = "card";
-	this.elem.id = id;
+	this.state = this.STATE_HIDDEN; // init closed
+	const e = document.createElement(this.SYMBOL_ELEMENT_TYPE);
+	e.className = this.FA_PREFIX + symbol;
+	this.elem = document.createElement(this.CARD_ELEMENT_TYPE);
+	this.elem.className = this.CLASS_CARD;
 	this.elem.appendChild(e);
 };
+
+// static constants for the class.
+Card.prototype.CLASS_CARD = 'card';
+Card.prototype.CLASS_OPEN = 'open';
+Card.prototype.CLASS_SHOW = 'show';
+Card.prototype.STATE_SHOWING = 0;
+Card.prototype.STATE_HIDDEN = -1;
+Card.prototype.STATE_MATCHED = 1;
+Card.prototype.SYMBOL_ELEMENT_TYPE = 'i';
+Card.prototype.CARD_ELEMENT_TYPE = 'li';
+Card.prototype.FA_PREFIX = 'fa fa-';
+
 
 /**
 * The symbols to display on the front of the card.
 * The symbols correspond to FontAwesome characters.
+* The number of symbols in this list will also
+* determine how many cards will be displayed on the board
 */
 Card.prototype.symbols = [
-	"anchor",
-	"bicycle",
-	"bolt",
-	"bomb",
-	"cube",
-	"diamond",
-	"leaf",
-	"paper-plane-o"
+	'anchor',
+	'bicycle',
+	'bolt',
+	'bomb',
+	'cube',
+	'diamond',
+	'leaf',
+	'paper-plane-o'
 ];
 
 /**
-*  Do the cards match?  Compares symbols.
+*	State functions to hide the state flags.
 */
-Card.prototype.match = function(otherCard) {
-	return this.symbol === otherCard.symbol;
+Card.prototype.isShowing = function () {
+	return this.state === this.STATE_SHOWING;
 }
+
+Card.prototype.isHidden = function () {
+	return this.state === this.STATE_HIDDEN;
+}
+
+Card.prototype.isMatched = function () {
+	return this.state === this.STATE_MATCHED;
+}
+
+
+/**
+*  Do the cards match?  Compares symbols on the cards.
+*  If the cards match, update both cards state to "matched";
+*  Returns a boolean answer.
+*/
+Card.prototype.matches = function(otherCard) {
+	let match = false;
+	if (this.symbol === otherCard.symbol) {
+		match = true;
+		this.state = this.STATE_MATCHED;
+		otherCard.state = otherCard.STATE_MATCHED;
+		// TODO: update class name to matched ??
+	}
+	return match;
+};
+
+/*
+*  Appends the given class name to the end of the existing
+*  class list.
+*/
+Card.prototype.addClass = function(classNameToAdd) {
+	const arr = this.elem.className.split(" ");
+    if (arr.indexOf(classNameToAdd) == -1) {
+        this.elem.className += " " + classNameToAdd;
+    }
+};
+
+/**
+*	Flip the card around to display on the game board.
+*/
+Card.prototype.show = function (){
+	if (this.isHidden()){
+		this.addClass(this.CLASS_OPEN);
+		this.addClass(this.CLASS_SHOW);
+		this.state = this.STATE_SHOWING;
+	}
+};
+
+/**
+* 	Flip the card over but delay a second so
+*   the card can be viewed before being hidden.
+*/
+Card.prototype.hide = function (){
+
+	// stop listening for clicks while cards are displayed.
+	this.parentNode.removeEventListener('click', respondToClick);
+	// TODO: animate the cards
+	// hide the cards after 2sec and start listening again.
+	setTimeout(function (c, node) {
+		c.elem.className = Card.prototype.CLASS_CARD;
+		c.state = c.STATE_HIDDEN;
+		node.addEventListener('click', respondToClick);
+	}, 1000, this, this.parentNode);
+}
+
 
 /*
  * Create a list that holds all of your cards
  * Loops through the set of symbols and creates
  * a pair of cards for each symbol in the stack
  */
-function createCards() {
+function createCards(parentNode) {
 	const cards = [];
 	const len = Card.prototype.symbols.length;
-	for (let i = 1; i <= len; i++){
+	for (let i = 0; i < len; i++){
 		// create a pair of identical cards and save them
 		let type = Card.prototype.symbols[i];
-		cards.push(new Card(i, type), new Card(i + len, type));
+		cards.push(
+			new Card(i, type, parentNode),
+			new Card(i + len, type, parentNode)
+		);
 	}
 	return cards;
 }
@@ -78,24 +170,31 @@ function shuffle(array) {
     return array;
 }
 
+/**
+* 	Set up the game by creating cards and shuffling them.
+*   Then display the cards on the board and start the game.
+*/
 function initialize() {
 
-	// get our deck of cards to work with
-	const cards = createCards();
-	// fragment to use to build up the game board elements
 	const fragment = document.createDocumentFragment();
 
-	// remove any children
+	// Get the game board "deck", remove existing cards and add a global listener
+	const deckNode = document.querySelector('.deck');
+	// remove existing cards
 	while (deckNode.firstChild) {
 		deckNode.removeChild(deckNode.firstChild);
 	}
-	// shuffle
+	deckNode.addEventListener('click', respondToClick);
+
+	// Create a deck of cards to display for the game
+	const cards = createCards(deckNode);
 	shuffle(cards);
-	// loop through the cards and display them on the screen
+
+	// Build up the card elements
 	cards.forEach(function(card) {
-	    // save the new elements
 	    fragment.appendChild(card.elem);
 	});
+
 	// Add the cards to the page.
 	deckNode.appendChild(fragment);
 
@@ -112,16 +211,47 @@ function initialize() {
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
-function respondToClick(evt) {
-
+const respondToClick = function(evt) {
 	if (evt.target.nodeName === 'LI') {
-		console.log ("clicked " + evt.target.id);
+		for (let i = 0; i < cards.length; i++){
+			// find the card that was clicked
+			if (evt.target === cards[i].elem){
+				// show the card
+				cards[i].show();
+				//  is there a card to match?
+				if (cardToMatch) {
+					// check for a match
+					if (!cards[i].matches(cardToMatch)){
+						// TODO: animate the cards
+						// hide the cards after 2sec and start listening again.
+						matchedCards.push(cards[i], cardToMatch);
+						cards[i].hide();
+						cardToMatch.hide();
+					}
+					cardToMatch = null;
+				} else {
+					// saving the card for matching
+ 					cardToMatch = cards[i];
+				}
+				// our work is done here: don't bubble up or loop again.
+				evt.stopPropagation();
+				break;
+			}
+		}
 	}
 }
 
-// get the game board and clear it.
-const deckNode = document.querySelector('.deck');
-deckNode.addEventListener('click', respondToClick);
-
-// Create and shuffle the display cards
+/**
+*	The set of cards for this game.
+*/
 const cards = initialize();
+
+/*
+* 	A list of cards that the player has matched during the game
+*/
+const matchedCards = [];
+
+/**
+* 	The card selected by the player to compare for a match.
+*/
+let cardToMatch = null;
