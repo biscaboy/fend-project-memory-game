@@ -249,17 +249,16 @@ const respondToClick = function(evt) {
 				//  is there a card to match?
 				if (cardToMatch) {
 					// check for a match
-					if (!cards[i].matches(cardToMatch)){
-						// TODO: animate the cards
-						// hide the cards after 2sec and start listening again.
+					if (cards[i].matches(cardToMatch)){
+						// TODO: animate the matched cards
 						matchedCards.push(cards[i], cardToMatch);
+					} else {
 						cards[i].hide();
 						cardToMatch.hide();
 					}
 					// we tried to match so increment the scoreboard and reset.
 					scoreboard.increment();
 					cardToMatch = null;
-
 				} else {
 					// saving the card for matching
  					cardToMatch = cards[i];
@@ -270,6 +269,10 @@ const respondToClick = function(evt) {
 			}
 		}
 	}
+}
+
+const resetGame = function(evt) {
+	cards = initialize();
 }
 
 /**
@@ -290,6 +293,7 @@ let cardToMatch = null;
 /**
 *	The set of cards for this game.
 */
-const cards = initialize();
+let cards = initialize();
 
+document.querySelector('.restart').addEventListener('click', resetGame);
 
