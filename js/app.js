@@ -7,6 +7,25 @@
 */
 
 /**
+* 	Class: Scoreboard
+*/
+const Scoreboard = function() {
+	this.score = 0;
+	this.counterElem = document.querySelector('.moves');
+}
+
+Scoreboard.prototype.increment = function() {
+	this.score++;
+	this.counterElem.innerHTML = this.score;
+}
+
+Scoreboard.prototype.reset = function() {
+	this.score = 0;
+	this.counterElem.innerHTML = this.score;
+}
+
+
+/**
 * 	Class: Card
 *
 * 	Represents a memory card on the playing board.
@@ -186,7 +205,7 @@ function initialize() {
 	}
 	deckNode.addEventListener('click', respondToClick);
 
-	// Create a deck of cards to display for the game
+	// Create a new deck of cards to display for the game
 	const cards = createCards(deckNode);
 	shuffle(cards);
 
@@ -197,6 +216,15 @@ function initialize() {
 
 	// Add the cards to the page.
 	deckNode.appendChild(fragment);
+
+	// reset the scoreboard
+	scoreboard.reset();
+
+	// reset the matched card list.
+	matchedCards.length = 0;
+
+	// reset the card to match.
+	cardToMatch = null;
 
 	return cards;
 }
@@ -215,7 +243,7 @@ const respondToClick = function(evt) {
 	if (evt.target.nodeName === 'LI') {
 		for (let i = 0; i < cards.length; i++){
 			// find the card that was clicked
-			if (evt.target === cards[i].elem){
+			if (evt.target === cards[i].elem && !cards[i].isMatched()){
 				// show the card
 				cards[i].show();
 				//  is there a card to match?
@@ -228,7 +256,10 @@ const respondToClick = function(evt) {
 						cards[i].hide();
 						cardToMatch.hide();
 					}
+					// we tried to match so increment the scoreboard and reset.
+					scoreboard.increment();
 					cardToMatch = null;
+
 				} else {
 					// saving the card for matching
  					cardToMatch = cards[i];
@@ -242,9 +273,9 @@ const respondToClick = function(evt) {
 }
 
 /**
-*	The set of cards for this game.
+*	The scoreboard for the game
 */
-const cards = initialize();
+const scoreboard = new Scoreboard();
 
 /*
 * 	A list of cards that the player has matched during the game
@@ -255,3 +286,10 @@ const matchedCards = [];
 * 	The card selected by the player to compare for a match.
 */
 let cardToMatch = null;
+
+/**
+*	The set of cards for this game.
+*/
+const cards = initialize();
+
+
