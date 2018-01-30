@@ -276,18 +276,11 @@ Card.prototype.show = function (){
 * 	@returns:
 */
 Card.prototype.hide = function (){
-
-	// stop listening for clicks while cards are displayed.
-	this.parentNode.removeEventListener('click', respondToClick);
 	// TODO: animate the cards
-	// hide the cards after 2sec and start listening again.
-	setTimeout(function (c, node) {
-		c.elem.className = Card.prototype.CLASS_CARD;
-		c.state = c.STATE_HIDDEN;
-		node.addEventListener('click', respondToClick);
-	}, 1000, this, this.parentNode);
-}
+	this.elem.className = this.CLASS_CARD;
+	this.state = this.STATE_HIDDEN;
 
+}
 
 /*
 * Create a list that holds all of your cards
@@ -347,8 +340,6 @@ function initialize() {
 
 	const fragment = document.createDocumentFragment();
 
-	// Get the game board "deck", remove existing cards and add a global listener
-	const deckNode = document.querySelector('.deck');
 	// remove existing cards
 	while (deckNode.firstChild) {
 		deckNode.removeChild(deckNode.firstChild);
@@ -403,16 +394,22 @@ const respondToClick = function(evt) {
 			if (evt.target === cards[i].elem && !cards[i].isMatched()){
 				// show the card
 				cards[i].show();
-				//  is there a card to match?
-				if (cardToMatch) {
+				//  is there a card to match? (make sure it's not the same card)
+				if (cardToMatch && (cardToMatch !== cards[i])) {
 					// check for a match
 					if (cards[i].matches(cardToMatch)){
 						// TODO: animate the matched cards
 						matchedCards.push(cards[i]);
 						scoreboard.incrementMatches();
 					} else {
-						cards[i].hide();
-						cardToMatch.hide();
+						// don't let the player click on anything else while we display cards
+						deckNode.removeEventListener('click', respondToClick);
+						// hide the cards after 1 sec and start listening again.
+						setTimeout(function (c1, c2) {
+							c1.hide();
+							c2.hide();
+							deckNode.addEventListener('click', respondToClick);
+						}, 1000, cards[i], cardToMatch);
 					}
 					// we tried to match so increment the scoreboard and reset.
 					scoreboard.incrementScore();
@@ -446,6 +443,11 @@ const resetGame = function(evt) {
 *	The scoreboard for the game
 */
 const scoreboard = new Scoreboard();
+
+/**
+* 	Deck of cards - all cards hang off this node
+*/
+const deckNode = document.querySelector('.deck');
 
 /*
 * 	A list of cards that the player has matched during the game
