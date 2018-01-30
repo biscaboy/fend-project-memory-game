@@ -10,20 +10,77 @@
 * 	Class: Scoreboard
 */
 const Scoreboard = function() {
-	this.score = 0;
 	this.counterElem = document.querySelector('.moves');
+	this.starsElem = document.querySelector('.stars');
+	this.timerElem = document.querySelector('.timer');
+	this.clockInterval = null;
+	this.score = 0;
+	this.elapsedTime = 0;
 }
 
-Scoreboard.prototype.increment = function() {
+/**
+*	Returns a formatted string in minutes and sedonds
+*	(mm:ss) of how long the player took to finish the game.
+*/
+Scoreboard.prototype.getGameDuration = function() {
+	const mins = Math.floor(this.elapsedTime / 60);
+	let secs = Math.floor(this.elapsedTime % 60);
+	if (secs < 10) {
+		secs = '0' + secs;
+	}
+	return mins + ':' + secs;
+}
+
+/**
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
+*/
+Scoreboard.prototype.startClock = function() {
+	this.elapsedTime = 0;
+	this.timerElem.innerHTML = '0:00';
+	clearInterval(this.clockInterval);
+	this.clockInterval = setInterval(function(sb) {
+		// get the current duration time and display it
+		sb.elapsedTime += 1;
+		sb.timerElem.innerHTML = sb.getGameDuration();
+	}, 1000, this);
+}
+
+/**
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
+*/
+Scoreboard.prototype.incrementScore = function() {
 	this.score++;
 	this.counterElem.innerHTML = this.score;
 }
 
-Scoreboard.prototype.reset = function() {
+/**
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
+*/
+Scoreboard.prototype.startGame = function() {
 	this.score = 0;
 	this.counterElem.innerHTML = this.score;
+	this.startClock();
 }
 
+/**
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
+*/
+Scoreboard.prototype.stopGame = function () {
+	clearInterval(this.clockInterval);
+	// display modal with winning stats.
+}
 
 /**
 * 	Class: Card
@@ -36,7 +93,7 @@ Scoreboard.prototype.reset = function() {
 *	elem - a DOM Element representing this card (a list item)
 * 	parentNode - A reference to the card's parent node - (the game board).
 */
-var Card = function (id, symbol, parent){
+const Card = function (id, symbol, parent){
 	this.parentNode = parent;
 	this.symbol = symbol;
 	this.state = this.STATE_HIDDEN; // init closed
@@ -78,15 +135,31 @@ Card.prototype.symbols = [
 
 /**
 *	State functions to hide the state flags.
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
 */
 Card.prototype.isShowing = function () {
 	return this.state === this.STATE_SHOWING;
 }
 
+/**
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
+*/
 Card.prototype.isHidden = function () {
 	return this.state === this.STATE_HIDDEN;
 }
 
+/**
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
+*/
 Card.prototype.isMatched = function () {
 	return this.state === this.STATE_MATCHED;
 }
@@ -96,6 +169,10 @@ Card.prototype.isMatched = function () {
 *  Do the cards match?  Compares symbols on the cards.
 *  If the cards match, update both cards state to "matched";
 *  Returns a boolean answer.
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
 */
 Card.prototype.matches = function(otherCard) {
 	let match = false;
@@ -111,6 +188,10 @@ Card.prototype.matches = function(otherCard) {
 /*
 *  Appends the given class name to the end of the existing
 *  class list.
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
 */
 Card.prototype.addClass = function(classNameToAdd) {
 	const arr = this.elem.className.split(" ");
@@ -121,6 +202,10 @@ Card.prototype.addClass = function(classNameToAdd) {
 
 /**
 *	Flip the card around to display on the game board.
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
 */
 Card.prototype.show = function (){
 	if (this.isHidden()){
@@ -133,6 +218,10 @@ Card.prototype.show = function (){
 /**
 * 	Flip the card over but delay a second so
 *   the card can be viewed before being hidden.
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
 */
 Card.prototype.hide = function (){
 
@@ -149,10 +238,14 @@ Card.prototype.hide = function (){
 
 
 /*
- * Create a list that holds all of your cards
- * Loops through the set of symbols and creates
- * a pair of cards for each symbol in the stack
- */
+* Create a list that holds all of your cards
+* Loops through the set of symbols and creates
+* a pair of cards for each symbol in the stack
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
+*/
 function createCards(parentNode) {
 	const cards = [];
 	const len = Card.prototype.symbols.length;
@@ -168,13 +261,14 @@ function createCards(parentNode) {
 }
 
 /*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
-
-// Shuffle function from http://stackoverflow.com/a/2450976
+* Display the cards on the page
+*   - shuffle the list of cards using the provided "shuffle" method below
+*   - loop through each card and create its HTML
+*   - add each card's HTML to the page
+* 	@description: Shuffle function from http://stackoverflow.com/a/2450976
+* 	@param: the array whose contents will be shuffled.
+* 	@returns: the shuffled array
+*/
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -192,6 +286,10 @@ function shuffle(array) {
 /**
 * 	Set up the game by creating cards and shuffling them.
 *   Then display the cards on the board and start the game.
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
 */
 function initialize() {
 
@@ -217,14 +315,14 @@ function initialize() {
 	// Add the cards to the page.
 	deckNode.appendChild(fragment);
 
-	// reset the scoreboard
-	scoreboard.reset();
-
 	// reset the matched card list.
 	matchedCards.length = 0;
 
 	// reset the card to match.
 	cardToMatch = null;
+
+	// start a new game which reset the scoreboard
+	scoreboard.startGame();
 
 	return cards;
 }
@@ -239,6 +337,13 @@ function initialize() {
  *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
+
+/**
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
+*/
 const respondToClick = function(evt) {
 	if (evt.target.nodeName === 'LI') {
 		for (let i = 0; i < cards.length; i++){
@@ -251,14 +356,18 @@ const respondToClick = function(evt) {
 					// check for a match
 					if (cards[i].matches(cardToMatch)){
 						// TODO: animate the matched cards
-						matchedCards.push(cards[i], cardToMatch);
+						matchedCards.push(cards[i]);
 					} else {
 						cards[i].hide();
 						cardToMatch.hide();
 					}
 					// we tried to match so increment the scoreboard and reset.
-					scoreboard.increment();
+					scoreboard.incrementScore();
 					cardToMatch = null;
+					// if the game is over stop the game!
+					if (matchedCards.length == Card.prototype.symbols.length){
+						scoreboard.stopGame();
+					}
 				} else {
 					// saving the card for matching
  					cardToMatch = cards[i];
@@ -271,6 +380,12 @@ const respondToClick = function(evt) {
 	}
 }
 
+/**
+* 	@constructor:
+* 	@description:
+* 	@param:
+* 	@returns:
+*/
 const resetGame = function(evt) {
 	cards = initialize();
 }
@@ -295,5 +410,5 @@ let cardToMatch = null;
 */
 let cards = initialize();
 
+// listens for clicks on the restart button to begin a new game.
 document.querySelector('.restart').addEventListener('click', resetGame);
-
