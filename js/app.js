@@ -16,6 +16,7 @@ const Scoreboard = function() {
 	this.clockInterval = null;
 	this.moves = 0;
 	this.elapsedTime = 0;
+	this.matches = 0;
 }
 
 /**
@@ -39,6 +40,7 @@ Scoreboard.prototype.getGameDuration = function() {
 */
 Scoreboard.prototype.startClock = function() {
 	this.elapsedTime = 0;
+	this.matches = 0;
 	this.timerElem.innerHTML = '0:00';
 	clearInterval(this.clockInterval);
 	this.clockInterval = setInterval(function(sb) {
@@ -51,12 +53,43 @@ Scoreboard.prototype.startClock = function() {
 /**
 * 	@constructor:
 * 	@description:
-* 	@param:
+* 	@param: numMatched - the number of pairs found so far.
 * 	@returns:
 */
 Scoreboard.prototype.incrementScore = function() {
 	this.moves++;
 	this.counterElem.innerHTML = this.moves;
+	// remove stars depending on the players performance
+	// rules for removing stars
+	// 1.  wait at least 6 moves before checking, then check other move
+	// 2.  if the ratio of moves to matched cards is ever less than 25% remove a star
+	// document.querySelector('.success-ratio').innerHTML = Math.floor((this.matches / this.moves) * 100) + '%';
+	if (this.moves > 6 && this.moves % 2 == 0 && (this.matches / this.moves < 0.25)) {
+		const starToRemove = document.querySelector('.stars li');
+		if (starToRemove){
+			starToRemove.parentElement.removeChild(starToRemove);
+		}
+	}
+}
+
+/**
+* 	@constructor:
+* 	@description:
+* 	@param: numMatched - the number of pairs found so far.
+* 	@returns:
+*/
+Scoreboard.prototype.incrementMatches = function() {
+	this.matches++;
+}
+
+/**
+* 	@constructor:
+* 	@description:
+* 	@param: numMatched - the number of pairs found so far.
+* 	@returns:
+*/
+Scoreboard.prototype.getMatches = function() {
+	return this.matches;
 }
 
 /**
@@ -80,10 +113,24 @@ Scoreboard.prototype.startGame = function() {
 Scoreboard.prototype.stopGame = function () {
 	// stop the clock
 	clearInterval(this.clockInterval);
+	let rank = 'seeker';
+	const stars = document.querySelectorAll('.stars li');
+	switch (stars.length) {
+		case 3:
+			rank = 'guru';
+			break;
+		case 2:
+			rank = 'master'
+			break;
+		case 1:
+			rank = 'ninja';
+	}
+	document.querySelector('.game-ranking').innerHTML = rank;
 	// display modal with winning stats.
 	document.querySelector('.game-over-stats-moves').innerHTML = this.moves;
 	document.querySelector('.game-over-stats-time').innerHTML = this.getGameDuration();
-	document.querySelector('.game-over-stats-stars').innerHTML = '0';
+	const starsMsg = (stars.length > 0) ? stars.length : `No stars earned this round`;
+	document.querySelector('.game-over-stats-stars').innerHTML = starsMsg;
 	$('#game-over-modal').modal();
 }
 
@@ -362,6 +409,7 @@ const respondToClick = function(evt) {
 					if (cards[i].matches(cardToMatch)){
 						// TODO: animate the matched cards
 						matchedCards.push(cards[i]);
+						scoreboard.incrementMatches();
 					} else {
 						cards[i].hide();
 						cardToMatch.hide();
@@ -369,8 +417,8 @@ const respondToClick = function(evt) {
 					// we tried to match so increment the scoreboard and reset.
 					scoreboard.incrementScore();
 					cardToMatch = null;
-					// if the game is over stop the game!
-					if (matchedCards.length == Card.prototype.symbols.length){
+					// if all the cards are matched stop the game!
+					if (scoreboard.getMatches() == Card.prototype.symbols.length){
 						scoreboard.stopGame();
 					}
 				} else {
