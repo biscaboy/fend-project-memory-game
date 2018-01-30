@@ -16,6 +16,7 @@ const Scoreboard = function() {
 	this.clockInterval = null;
 	this.moves = 0;
 	this.elapsedTime = 0;
+	this.matches = 0;
 }
 
 /**
@@ -39,6 +40,7 @@ Scoreboard.prototype.getGameDuration = function() {
 */
 Scoreboard.prototype.startClock = function() {
 	this.elapsedTime = 0;
+	this.matches = 0;
 	this.timerElem.innerHTML = '0:00';
 	clearInterval(this.clockInterval);
 	this.clockInterval = setInterval(function(sb) {
@@ -51,12 +53,43 @@ Scoreboard.prototype.startClock = function() {
 /**
 * 	@constructor:
 * 	@description:
-* 	@param:
+* 	@param: numMatched - the number of pairs found so far.
 * 	@returns:
 */
 Scoreboard.prototype.incrementScore = function() {
 	this.moves++;
 	this.counterElem.innerHTML = this.moves;
+	// remove stars depending on the players performance
+	// rules for removing stars
+	// 1.  wait at least 6 moves before checking, then check other move
+	// 2.  if the ratio of moves to matched cards is ever less than 25% remove a star
+	document.querySelector('.success-ratio').innerHTML = Math.floor((this.matches / this.moves) * 100) + '%';
+	if (this.moves > 6 && this.moves % 2 == 0 && (this.matches / this.moves < 0.25)) {
+		const starToRemove = document.querySelector('.stars li');
+		if (starToRemove){
+			starToRemove.parentElement.removeChild(starToRemove);
+		}
+	}
+}
+
+/**
+* 	@constructor:
+* 	@description:
+* 	@param: numMatched - the number of pairs found so far.
+* 	@returns:
+*/
+Scoreboard.prototype.incrementMatches = function() {
+	this.matches++;
+}
+
+/**
+* 	@constructor:
+* 	@description:
+* 	@param: numMatched - the number of pairs found so far.
+* 	@returns:
+*/
+Scoreboard.prototype.getMatches = function() {
+	return this.matches;
 }
 
 /**
@@ -80,10 +113,24 @@ Scoreboard.prototype.startGame = function() {
 Scoreboard.prototype.stopGame = function () {
 	// stop the clock
 	clearInterval(this.clockInterval);
+	let rank = 'seeker';
+	const stars = document.querySelectorAll('.stars li');
+	switch (stars.length) {
+		case 3:
+			rank = 'guru';
+			break;
+		case 2:
+			rank = 'master'
+			break;
+		case 1:
+			rank = 'ninja';
+	}
+	document.querySelector('.game-ranking').innerHTML = rank;
 	// display modal with winning stats.
 	document.querySelector('.game-over-stats-moves').innerHTML = this.moves;
 	document.querySelector('.game-over-stats-time').innerHTML = this.getGameDuration();
-	document.querySelector('.game-over-stats-stars').innerHTML = '0';
+	const starsMsg = (stars.length > 0) ? stars.length : `No stars earned this round`;
+	document.querySelector('.game-over-stats-stars').innerHTML = starsMsg;
 	$('#game-over-modal').modal();
 }
 
@@ -229,18 +276,11 @@ Card.prototype.show = function (){
 * 	@returns:
 */
 Card.prototype.hide = function (){
-
-	// stop listening for clicks while cards are displayed.
-	this.parentNode.removeEventListener('click', respondToClick);
 	// TODO: animate the cards
-	// hide the cards after 2sec and start listening again.
-	setTimeout(function (c, node) {
-		c.elem.className = Card.prototype.CLASS_CARD;
-		c.state = c.STATE_HIDDEN;
-		node.addEventListener('click', respondToClick);
-	}, 1000, this, this.parentNode);
-}
+	this.elem.className = this.CLASS_CARD;
+	this.state = this.STATE_HIDDEN;
 
+}
 
 /*
 * Create a list that holds all of your cards
@@ -300,8 +340,6 @@ function initialize() {
 
 	const fragment = document.createDocumentFragment();
 
-	// Get the game board "deck", remove existing cards and add a global listener
-	const deckNode = document.querySelector('.deck');
 	// remove existing cards
 	while (deckNode.firstChild) {
 		deckNode.removeChild(deckNode.firstChild);
@@ -356,21 +394,28 @@ const respondToClick = function(evt) {
 			if (evt.target === cards[i].elem && !cards[i].isMatched()){
 				// show the card
 				cards[i].show();
-				//  is there a card to match?
-				if (cardToMatch) {
+				//  is there a card to match? (make sure it's not the same card)
+				if (cardToMatch && (cardToMatch !== cards[i])) {
 					// check for a match
 					if (cards[i].matches(cardToMatch)){
 						// TODO: animate the matched cards
 						matchedCards.push(cards[i]);
+						scoreboard.incrementMatches();
 					} else {
-						cards[i].hide();
-						cardToMatch.hide();
+						// don't let the player click on anything else while we display cards
+						deckNode.removeEventListener('click', respondToClick);
+						// hide the cards after 1 sec and start listening again.
+						setTimeout(function (c1, c2) {
+							c1.hide();
+							c2.hide();
+							deckNode.addEventListener('click', respondToClick);
+						}, 1000, cards[i], cardToMatch);
 					}
 					// we tried to match so increment the scoreboard and reset.
 					scoreboard.incrementScore();
 					cardToMatch = null;
-					// if the game is over stop the game!
-					if (matchedCards.length == Card.prototype.symbols.length){
+					// if all the cards are matched stop the game!
+					if (scoreboard.getMatches() == Card.prototype.symbols.length){
 						scoreboard.stopGame();
 					}
 				} else {
@@ -399,6 +444,11 @@ const resetGame = function(evt) {
 */
 const scoreboard = new Scoreboard();
 
+/**
+* 	Deck of cards - all cards hang off this node
+*/
+const deckNode = document.querySelector('.deck');
+
 /*
 * 	A list of cards that the player has matched during the game
 */
@@ -407,7 +457,7 @@ const matchedCards = [];
 /**
 * 	The card selected by the player to compare for a match.
 */
-let cardToMatch = null;
+let cardToMatch = [];
 
 /**
 *	The set of cards for this game.
