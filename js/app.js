@@ -14,7 +14,7 @@ const Scoreboard = function() {
 	this.starsElem = document.querySelector('.stars');
 	this.timerElem = document.querySelector('.timer');
 	this.clockInterval = null;
-	this.score = 0;
+	this.moves = 0;
 	this.elapsedTime = 0;
 }
 
@@ -55,8 +55,8 @@ Scoreboard.prototype.startClock = function() {
 * 	@returns:
 */
 Scoreboard.prototype.incrementScore = function() {
-	this.score++;
-	this.counterElem.innerHTML = this.score;
+	this.moves++;
+	this.counterElem.innerHTML = this.moves;
 }
 
 /**
@@ -66,8 +66,8 @@ Scoreboard.prototype.incrementScore = function() {
 * 	@returns:
 */
 Scoreboard.prototype.startGame = function() {
-	this.score = 0;
-	this.counterElem.innerHTML = this.score;
+	this.moves = 0;
+	this.counterElem.innerHTML = this.moves;
 	this.startClock();
 }
 
@@ -78,8 +78,13 @@ Scoreboard.prototype.startGame = function() {
 * 	@returns:
 */
 Scoreboard.prototype.stopGame = function () {
+	// stop the clock
 	clearInterval(this.clockInterval);
 	// display modal with winning stats.
+	document.querySelector('.game-over-stats-moves').innerHTML = this.moves;
+	document.querySelector('.game-over-stats-time').innerHTML = this.getGameDuration();
+	document.querySelector('.game-over-stats-stars').innerHTML = '0';
+	$('#game-over-modal').modal();
 }
 
 /**
@@ -372,8 +377,7 @@ const respondToClick = function(evt) {
 					// saving the card for matching
  					cardToMatch = cards[i];
 				}
-				// our work is done here: don't bubble up or loop again.
-				evt.stopPropagation();
+				// our work is done here
 				break;
 			}
 		}
