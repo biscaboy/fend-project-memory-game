@@ -457,7 +457,7 @@ const matchedCards = [];
 /**
 * 	The card selected by the player to compare for a match.
 */
-let cardToMatch = [];
+let cardToMatch = null;
 
 /**
 *	The set of cards for this game.
