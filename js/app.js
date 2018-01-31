@@ -6,6 +6,7 @@
 *	Javascript engine for the Memory Game.
 */
 
+// TODO:  initialize the stars and add them to reset as well.
 /**
 *	Class: Scoreboard
 * 	@constructor:
@@ -281,7 +282,7 @@ function createCards(parentNode) {
 * 	@description: randomly shuffles the elements of a given array
 *	Shuffle function from http://stackoverflow.com/a/2450976
 * 	@param: the array whose contents will be shuffled.
-* 	@returns: the shuffled array
+* 	@returns {Array} the shuffled array
 */
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -298,12 +299,9 @@ function shuffle(array) {
 }
 
 /**
-* 	Set up the game by creating cards and shuffling them.
-*   Then display the cards on the board and start the game.
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+* 	@description: Set up the game by creating cards and shuffling them.
+*  	Then display the cards on the board and start the game.
+	@return {Array} an array of Card objects
 */
 function initialize() {
 
@@ -327,9 +325,6 @@ function initialize() {
 	// Add the cards to the page.
 	deckNode.appendChild(fragment);
 
-	// reset the matched card list.
-	matchedCards.length = 0;
-
 	// reset the card to match.
 	cardToMatch = null;
 
@@ -339,22 +334,11 @@ function initialize() {
 	return cards;
 }
 
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
-
 /**
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+* 	@description:  Loops through the cards in the game and checks for matches.
+*	If a card has already been selected for comparison, compare the cards.
+*	If there is no card for comparison, save this card and wait.
+* 	@param {EventListener}
 */
 const respondToClick = function(evt) {
 	if (evt.target.nodeName === 'LI') {
@@ -368,7 +352,6 @@ const respondToClick = function(evt) {
 					// check for a match
 					if (cards[i].matches(cardToMatch)){
 						// TODO: animate the matched cards
-						matchedCards.push(cards[i]);
 						scoreboard.incrementMatches();
 					} else {
 						// don't let the player click on anything else while we display cards
@@ -399,10 +382,8 @@ const respondToClick = function(evt) {
 }
 
 /**
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@reMoves:
+* 	@description:  Starts the game over clearing the scoreboard and reshuffling the deck
+* 	@param {EventListener}
 */
 const resetGame = function(evt) {
 	cards = initialize();
@@ -417,11 +398,6 @@ const scoreboard = new Scoreboard();
 * 	Deck of cards - all cards hang off this node
 */
 const deckNode = document.querySelector('.deck');
-
-/*
-* 	A list of cards that the player has matched during the game
-*/
-const matchedCards = [];
 
 /**
 * 	The card selected by the player to compare for a match.
