@@ -7,6 +7,7 @@
 */
 
 // TODO:  initialize the stars and add them to reset as well.
+// TODO:  1 moves -> 1 move.
 /**
 *	Class: Scoreboard
 * 	@constructor:
@@ -279,6 +280,24 @@ function createCards(parentNode) {
 }
 
 /*
+*  	@description: Create an array of star elements
+*	@returns {Array} Elements of list items with a FA star as their class
+*/
+function createStars() {
+	const stars = [];
+	for (let i = 0; i < 3; i++){
+		// create the star element with the FA star image
+		let className = "fa fa-star";
+		let starElem = document.createElement('i');
+		starElem.className = className;
+		let listElem = document.createElement('li');
+		listElem.appendChild(starElem);
+		stars.push(listElem);
+	}
+	return stars;
+}
+
+/*
 * 	@description: randomly shuffles the elements of a given array
 *	Shuffle function from http://stackoverflow.com/a/2450976
 * 	@param: the array whose contents will be shuffled.
@@ -305,7 +324,8 @@ function shuffle(array) {
 */
 function initialize() {
 
-	const fragment = document.createDocumentFragment();
+	const deckFragment = document.createDocumentFragment();
+	const listFragment = document.createDocumentFragment();
 
 	// remove existing cards
 	while (deckNode.firstChild) {
@@ -313,17 +333,33 @@ function initialize() {
 	}
 	deckNode.addEventListener('click', respondToClick);
 
+	// remove existing stars
+	const starsToRemove = document.querySelectorAll('.stars li');
+	starsToRemove.forEach(function(star) {
+		star.parentElement.removeChild(star);
+	});
+
 	// Create a new deck of cards to display for the game
 	const cards = createCards(deckNode);
 	shuffle(cards);
 
 	// Build up the card elements
 	cards.forEach(function(card) {
-	    fragment.appendChild(card.elem);
+	    deckFragment.appendChild(card.elem);
 	});
 
 	// Add the cards to the page.
-	deckNode.appendChild(fragment);
+	deckNode.appendChild(deckFragment);
+
+	// create a new set of stars
+	const stars = createStars();
+
+	stars.forEach(function(star) {
+		listFragment.appendChild(star);
+	});
+
+	// append the stars to the document.
+	cardList.appendChild(listFragment);
 
 	// reset the card to match.
 	cardToMatch = null;
@@ -398,6 +434,11 @@ const scoreboard = new Scoreboard();
 * 	Deck of cards - all cards hang off this node
 */
 const deckNode = document.querySelector('.deck');
+
+/**
+* 	The List of stars on the scoreboard
+*/
+const cardList = document.querySelector('.stars');
 
 /**
 * 	The card selected by the player to compare for a match.
