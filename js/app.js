@@ -6,7 +6,6 @@
 *	Javascript engine for the Memory Game.
 */
 
-// TODO:  initialize the stars and add them to reset as well.
 // TODO:  1 moves -> 1 move.
 /**
 *	Class: Scoreboard
@@ -395,10 +394,29 @@ function attemptMatch(card1, card2) {
 	scoreboard.incrememntMoves();
 }
 
-/**
-* 	@description:  Loops through the cards in the game and checks for matches.
-*	If a card has already been selected for comparison, compare the cards.
+/*
+*	@description If a card has already been selected for comparison, compare the cards.
 *	If there is no card for comparison, save this card and wait.
+*/
+const handleCardClick = function(card) {
+	// show the card
+	card.show();
+	//  is there a card to match?
+	if (cardToMatch) {
+		attemptMatch(card, cardToMatch);
+		cardToMatch = null;
+		// if all the cards are matched stop the game!
+		if (scoreboard.getMatches() == Card.prototype.symbols.length){
+			scoreboard.stopGame();
+		}
+	} else {
+		// saving the card for matching on next click
+		cardToMatch = card;
+	}
+}
+
+/**
+* 	@description:  Loops through the cards in the game, if one has been clicked handle it.
 * 	@param {EventListener}
 */
 const respondToClick = function(evt) {
@@ -406,21 +424,7 @@ const respondToClick = function(evt) {
 		for (let i = 0; i < cards.length; i++){
 			// find the card that was clicked  (make sure it's not the same card again)
 			if (evt.target === cards[i].elem && !cards[i].isMatched() && (cards[i] !== cardToMatch)){
-				// show the card
-				cards[i].show();
-				//  is there a card to match?
-				if (cardToMatch) {
-					attemptMatch(cards[i], cardToMatch);
-					cardToMatch = null;
-					// if all the cards are matched stop the game!
-					if (scoreboard.getMatches() == Card.prototype.symbols.length){
-						scoreboard.stopGame();
-					}
-				} else {
-					// saving the card for matching
-					cardToMatch = cards[i];
-				}
-				// our work is done here
+				handleCardClick(cards[i]);
 				break;
 			}
 		}
