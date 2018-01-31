@@ -7,7 +7,9 @@
 */
 
 /**
-* 	Class: Scoreboard
+*	Class: Scoreboard
+* 	@constructor:
+* 	@description: Tracks and displays player moves, stars and game timer.
 */
 const Scoreboard = function() {
 	this.counterElem = document.querySelector('.moves');
@@ -20,8 +22,8 @@ const Scoreboard = function() {
 }
 
 /**
-*	Returns a formatted string in minutes and sedonds
-*	(mm:ss) of how long the player took to finish the game.
+* 	@description: provides the elapsed time from the start of the game
+* 	@returns: a formatted string in minutes and seconds (mm:ss).
 */
 Scoreboard.prototype.getGameDuration = function() {
 	const mins = Math.floor(this.elapsedTime / 60);
@@ -33,10 +35,8 @@ Scoreboard.prototype.getGameDuration = function() {
 }
 
 /**
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+* 	@description: Begins an Interval that counts the game time,
+*	displays it and updates it.
 */
 Scoreboard.prototype.startClock = function() {
 	this.elapsedTime = 0;
@@ -51,12 +51,17 @@ Scoreboard.prototype.startClock = function() {
 }
 
 /**
-* 	@constructor:
-* 	@description:
-* 	@param: numMatched - the number of pairs found so far.
-* 	@returns:
+* 	@description: Stops the game clock
 */
-Scoreboard.prototype.incrementScore = function() {
+Scoreboard.prototype.stopClock = function() {
+	clearInterval(this.clockInterval);
+}
+
+/**
+* 	@description: Updates the scoreboard with a move.
+*	A move consists of turing over two cards.
+*/
+Scoreboard.prototype.incrememntMoves = function() {
 	this.moves++;
 	this.counterElem.innerHTML = this.moves;
 	// remove stars depending on the players performance
@@ -73,30 +78,25 @@ Scoreboard.prototype.incrementScore = function() {
 }
 
 /**
-* 	@constructor:
-* 	@description:
-* 	@param: numMatched - the number of pairs found so far.
-* 	@returns:
+* 	@description: Updates by one the matches count.
+* 	A match is made when two cards of with the same
+*	symbol are turned over and displayed.
 */
 Scoreboard.prototype.incrementMatches = function() {
 	this.matches++;
 }
 
 /**
-* 	@constructor:
-* 	@description:
-* 	@param: numMatched - the number of pairs found so far.
-* 	@returns:
+* 	@description: Accessor method to the current number of matched pairs of cards.
+* 	@returns: the latest matches count saved in the scoreboard.
 */
 Scoreboard.prototype.getMatches = function() {
 	return this.matches;
 }
 
 /**
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+* 	@description:  Begins the game by clearing the number of moves
+*	and starting the clock.
 */
 Scoreboard.prototype.startGame = function() {
 	this.moves = 0;
@@ -105,14 +105,12 @@ Scoreboard.prototype.startGame = function() {
 }
 
 /**
-* 	@constructor:
-* 	@description:
+* 	@description:  Stops the game clock, and displays a modal Congratulations message.
 * 	@param:
 * 	@returns:
 */
 Scoreboard.prototype.stopGame = function () {
-	// stop the clock
-	clearInterval(this.clockInterval);
+	this.stopClock();
 	let rank = 'seeker';
 	const stars = document.querySelectorAll('.stars li');
 	switch (stars.length) {
@@ -136,10 +134,9 @@ Scoreboard.prototype.stopGame = function () {
 
 /**
 * 	Class: Card
-*
-* 	Represents a memory card on the playing board.
-*
-* 	A Card has the following properties:
+*	@constructor
+* 	@description: Represents a memory card on the playing board.
+** 	A Card has the following properties:
 * 	symbol - The symbol to match
 * 	state - closed (-1), open (0), matched (1)
 *	elem - a DOM Element representing this card (a list item)
@@ -169,7 +166,7 @@ Card.prototype.FA_PREFIX = 'fa fa-';
 
 
 /**
-* The symbols to display on the front of the card.
+* @description The symbols to display on the front of the card.
 * The symbols correspond to FontAwesome characters.
 * The number of symbols in this list will also
 * determine how many cards will be displayed on the board
@@ -186,31 +183,24 @@ Card.prototype.symbols = [
 ];
 
 /**
-*	State functions to hide the state flags.
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+*	@description: Indicates if the card is currently showing on the board.
+* 	@returns  {boolean}  true if showing otherwise false.
 */
 Card.prototype.isShowing = function () {
 	return this.state === this.STATE_SHOWING;
 }
 
 /**
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+* 	@description: Indicates if the card is currently hidden or facing down on the board
+* 	@returns {boolean} true if hidden, otherwise false.
 */
 Card.prototype.isHidden = function () {
 	return this.state === this.STATE_HIDDEN;
 }
 
 /**
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+* 	@description:  Indicates if the card has been matched in a pair.
+* 	@returns {boolean} true if matched, otherwise false.
 */
 Card.prototype.isMatched = function () {
 	return this.state === this.STATE_MATCHED;
@@ -218,13 +208,10 @@ Card.prototype.isMatched = function () {
 
 
 /**
-*  Do the cards match?  Compares symbols on the cards.
-*  If the cards match, update both cards state to "matched";
-*  Returns a boolean answer.
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+*   @description: Compares symbols on the cards and determines a match.
+*  	If the cards match, update both cards state to "matched";
+* 	@param {Card} the card to compare to this Card.
+* 	@returns {boolean} true if the cards match, false if not.
 */
 Card.prototype.matches = function(otherCard) {
 	let match = false;
@@ -232,17 +219,13 @@ Card.prototype.matches = function(otherCard) {
 		match = true;
 		this.state = this.STATE_MATCHED;
 		otherCard.state = otherCard.STATE_MATCHED;
-		// TODO: update class name to matched ??
 	}
 	return match;
 };
 
 /*
-*  Appends the given class name to the end of the existing
-*  class list.
-* 	@constructor:
-* 	@description:
-* 	@param:
+* 	@description: Appends the given class name to the end of the existing class list.
+* 	@param {string} the class to add to the class list for of the Card.
 * 	@returns:
 */
 Card.prototype.addClass = function(classNameToAdd) {
@@ -253,11 +236,7 @@ Card.prototype.addClass = function(classNameToAdd) {
 };
 
 /**
-*	Flip the card around to display on the game board.
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+* 	@description: Flip the card around to display on the game board.
 */
 Card.prototype.show = function (){
 	if (this.isHidden()){
@@ -268,12 +247,7 @@ Card.prototype.show = function (){
 };
 
 /**
-* 	Flip the card over but delay a second so
-*   the card can be viewed before being hidden.
-* 	@constructor:
-* 	@description:
-* 	@param:
-* 	@returns:
+* 	@description: Flip the card over to a hidden state
 */
 Card.prototype.hide = function (){
 	// TODO: animate the cards
@@ -283,12 +257,10 @@ Card.prototype.hide = function (){
 }
 
 /*
-* Create a list that holds all of your cards
-* Loops through the set of symbols and creates
-* a pair of cards for each symbol in the stack
-* 	@constructor:
-* 	@description:
-* 	@param:
+*  	@description: Create a list that holds all of your cards
+*	Loops through the set of symbols and creates
+* 	a pair of cards for each symbol in the stack
+* 	@param {Node} the DOM Node to use as a parent to display Card in the DOM.
 * 	@returns:
 */
 function createCards(parentNode) {
@@ -306,11 +278,8 @@ function createCards(parentNode) {
 }
 
 /*
-* Display the cards on the page
-*   - shuffle the list of cards using the provided "shuffle" method below
-*   - loop through each card and create its HTML
-*   - add each card's HTML to the page
-* 	@description: Shuffle function from http://stackoverflow.com/a/2450976
+* 	@description: randomly shuffles the elements of a given array
+*	Shuffle function from http://stackoverflow.com/a/2450976
 * 	@param: the array whose contents will be shuffled.
 * 	@returns: the shuffled array
 */
@@ -412,7 +381,7 @@ const respondToClick = function(evt) {
 						}, 1000, cards[i], cardToMatch);
 					}
 					// we tried to match so increment the scoreboard and reset.
-					scoreboard.incrementScore();
+					scoreboard.incrememntMoves();
 					cardToMatch = null;
 					// if all the cards are matched stop the game!
 					if (scoreboard.getMatches() == Card.prototype.symbols.length){
@@ -433,7 +402,7 @@ const respondToClick = function(evt) {
 * 	@constructor:
 * 	@description:
 * 	@param:
-* 	@returns:
+* 	@reMoves:
 */
 const resetGame = function(evt) {
 	cards = initialize();
