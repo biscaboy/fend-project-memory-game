@@ -113,7 +113,8 @@ Scoreboard.prototype.startGame = function() {
 */
 Scoreboard.prototype.stopGame = function () {
 	this.stopClock();
-	let rank = 'seeker';
+	// display modal with winning stats.
+		let rank = 'seeker';
 	const stars = document.querySelectorAll('.stars li');
 	switch (stars.length) {
 		case 3:
@@ -126,7 +127,6 @@ Scoreboard.prototype.stopGame = function () {
 			rank = 'ninja';
 	}
 	document.querySelector('.game-ranking').innerHTML = rank;
-	// display modal with winning stats.
 	document.querySelector('.game-over-stats-moves').innerHTML = this.moves;
 	document.querySelector('.game-over-stats-time').innerHTML = this.getGameDuration();
 	const starsMsg = (stars.length > 0) ? stars.length : `No stars earned this round`;
@@ -371,6 +371,31 @@ function initialize() {
 }
 
 /**
+* @description Compare two cards and update the game board and scoreboard with the result
+*/
+function attemptMatch(card1, card2) {
+	// check for a match
+	if (card1.matches(card2)){
+		// a match!
+		scoreboard.incrementMatches();
+		// TODO: animate the matched cards
+	} else {
+		// no match.
+		// TODO Animate the cards
+		// don't let the player click on anything else while we display cards
+		deckNode.removeEventListener('click', respondToClick);
+		// hide the cards after 1 sec and start listening again for next move.
+		setTimeout(function (c1, c2) {
+			c1.hide();
+			c2.hide();
+			deckNode.addEventListener('click', respondToClick);
+		}, 1000, card1, card2);
+	}
+	// we tried to match so increment the scoreboard and reset.
+	scoreboard.incrememntMoves();
+}
+
+/**
 * 	@description:  Loops through the cards in the game and checks for matches.
 *	If a card has already been selected for comparison, compare the cards.
 *	If there is no card for comparison, save this card and wait.
@@ -379,28 +404,13 @@ function initialize() {
 const respondToClick = function(evt) {
 	if (evt.target.nodeName === 'LI') {
 		for (let i = 0; i < cards.length; i++){
-			// find the card that was clicked
-			if (evt.target === cards[i].elem && !cards[i].isMatched()){
+			// find the card that was clicked  (make sure it's not the same card again)
+			if (evt.target === cards[i].elem && !cards[i].isMatched() && (cards[i] !== cardToMatch)){
 				// show the card
 				cards[i].show();
-				//  is there a card to match? (make sure it's not the same card)
-				if (cardToMatch && (cardToMatch !== cards[i])) {
-					// check for a match
-					if (cards[i].matches(cardToMatch)){
-						// TODO: animate the matched cards
-						scoreboard.incrementMatches();
-					} else {
-						// don't let the player click on anything else while we display cards
-						deckNode.removeEventListener('click', respondToClick);
-						// hide the cards after 1 sec and start listening again.
-						setTimeout(function (c1, c2) {
-							c1.hide();
-							c2.hide();
-							deckNode.addEventListener('click', respondToClick);
-						}, 1000, cards[i], cardToMatch);
-					}
-					// we tried to match so increment the scoreboard and reset.
-					scoreboard.incrememntMoves();
+				//  is there a card to match?
+				if (cardToMatch) {
+					attemptMatch(cards[i], cardToMatch);
 					cardToMatch = null;
 					// if all the cards are matched stop the game!
 					if (scoreboard.getMatches() == Card.prototype.symbols.length){
@@ -408,7 +418,7 @@ const respondToClick = function(evt) {
 					}
 				} else {
 					// saving the card for matching
- 					cardToMatch = cards[i];
+					cardToMatch = cards[i];
 				}
 				// our work is done here
 				break;
@@ -450,5 +460,7 @@ let cardToMatch = null;
 */
 let cards = initialize();
 
-// listens for clicks on the restart button to begin a new game.
-document.querySelector('.restart').addEventListener('click', resetGame);
+// listens for clicks on the restart buttons to begin a new game.
+document.querySelectorAll('.restart').forEach(function(btn) {
+	btn.addEventListener('click', resetGame);
+});
