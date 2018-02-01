@@ -16,6 +16,7 @@ body {
     padding: 0;
 }
 
+
 body {
     background: #ffffff url('../img/geometry2.png'); /* Background pattern from Subtle Patterns */
     font-family: 'Coda', cursive;
@@ -37,12 +38,8 @@ h1 {
 /*
  * Styles for the deck of cards
  */
-
 .deck {
-    width: 660px;
-    min-height: 680px;
     background: linear-gradient(160deg, #02ccba 0%, #aa7ecd 100%);
-    padding: 32px;
     border-radius: 10px;
     box-shadow: 12px 15px 20px 0 rgba(46, 61, 73, 0.5);
     display: flex;
@@ -53,8 +50,6 @@ h1 {
 }
 
 .deck .card {
-    height: 125px;
-    width: 125px;
     background: #2e3d49;
     font-size: 0;
     color: #ffffff;
@@ -88,7 +83,6 @@ h1 {
 
 .score-panel {
     text-align: left;
-    width: 345px;
     margin-bottom: 10px;
 }
 
@@ -97,6 +91,8 @@ h1 {
     padding: 0;
     display: inline-block;
     margin: 0 5px 0 0;
+    width: 45px;
+    text-align: left;
 }
 
 .score-panel .stars li {
@@ -109,10 +105,168 @@ h1 {
     cursor: pointer;
 }
 
+.score-panel .timer {
+    padding: 0 0 0 10px;
+    min-width: 25px;
+    text-align: center;
+    display: inline-block;
+}
+
+.score-panel .moves {
+    padding: 0 5px 0 0;
+    min-width: 25px;
+    text-align: right;
+    display: inline-block;
+}
+
 .restart-button {
     cursor: pointer;
 }
 
+.modal-outer-flex-container {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    min-height: 100%;
+    min-width: 100%;
+}
+
+.modal-outer-flex-container .show {
+    display: flex;
+}
+
+.modal-inner-flex-container {
+    border-radius: 1em 1em 1em 1em;
+    padding: 15px;
+    background:white;
+    max-height: 80%;
+    max-width: 80%;
+    border: solid 3px #000;
+    box-shadow: 5px 5px 8px #333;
+}
+
 .modal-title {
     float: left;
+}
+
+.modal-header .modal-dismiss-btn {
+    float: right;
+    cursor: pointer;
+    color: #000;
+}
+
+.modal-body {
+    overflow-x: scroll;
+    clear: both;
+}
+
+.modal-body table {
+    border: 0;
+}
+
+.modal-footer button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+    width: 100px;
+    height: 50px;
+    border-radius: 0.5em;
+    background-color: #109;
+    color: #fff;
+    font-size: 16px;
+    box-shadow: 5px 5px 8px #ccc;
+}
+
+.modal-footer button:hover {
+    background-color: #149;
+}
+
+/* Media Queries */
+@media only screen and (min-width: 750px) {
+
+    .deck {
+        width: 660px;
+        min-height: 680px;
+        padding: 32px;
+    }
+
+    .deck .card {
+        height: 125px;
+        width: 125px;
+    }
+
+    .score-panel {
+        font-size: 24px;
+        width: 550px;
+    }
+
+    .score-panel .stars {
+        margin: 0 5px 0 0;
+        width: 90px;
+    }
+
+    .score-panel .timer {
+        padding: 0 0 0 100px;
+        min-width: 50px;
+    }
+
+    .score-panel .moves {
+        padding: 0 10px 0 50px;
+        min-width: 50px;
+    }
+
+}
+
+@media only screen and (max-width: 749px) {
+
+    .deck {
+        width: 450px;
+        min-height: 450px;
+        padding: 24px;
+    }
+
+    .deck .card {
+        height: 85px;
+        width: 85px;
+    }
+
+    .score-panel {
+        width: 250px;
+    }
+
+}
+
+
+@media only screen and (max-width: 485px) {
+
+    .deck {
+        width: 300px;
+        min-height: 300px;
+        padding: 18px;
+    }
+
+    .deck .card {
+        height: 56px;
+        width: 56px;
+    }
+
+    .deck .card.show {
+        font-size: 24px;
+    }
+
+    .deck .card.match {
+        font-size: 24px;
+    }
+
+    .score-panel {
+        width: 200px;
+    }
+
 }
