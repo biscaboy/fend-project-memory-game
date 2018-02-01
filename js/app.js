@@ -6,9 +6,6 @@
 *	Javascript engine for the Memory Game.
 */
 
-// TODO:  1 moves -> 1 move.
-// TODO:  Modal - make it part of the Scoreboard?
-// TODO:  save references to the SB elements in the constructor.
 /**
 *	Class: Scoreboard
 * 	@constructor:
@@ -136,8 +133,9 @@ Scoreboard.prototype.stopGame = function () {
 		card.elem.classList.add('game-over');
 	});
 	setTimeout(function(){
+		modalBg.classList.add('modal-bg-show');
 		modal.classList.add('modal-show');
-	},3000);
+	},1500);
 }
 
 /**
@@ -157,7 +155,7 @@ const Card = function (id, symbol, parent){
 	const e = document.createElement(this.SYMBOL_ELEMENT_TYPE);
 	e.className = this.FA_PREFIX + symbol;
 	this.elem = document.createElement(this.CARD_ELEMENT_TYPE);
-	this.elem.className = this.CLASS_CARD;
+	this.elem.className = this.CLASS_CARD + ' ' + this.CLASS_SHOW;
 	this.elem.appendChild(e);
 };
 
@@ -452,6 +450,9 @@ const closeModal = function(evt) {
 	if (modal.classList.contains('modal-show')) {
 		modal.classList.remove('modal-show');
 	}
+	if (modalBg.classList.contains('modal-bg-show')) {
+		modalBg.classList.remove('modal-bg-show');
+	}
 }
 
 /**
@@ -468,6 +469,11 @@ const deckNode = document.querySelector('.deck');
 *	Popup modal for congratualations message
 */
 const modal = document.querySelector('#game-over-modal');
+
+/**
+* 	Translucent background for the modal.
+*/
+const modalBg = document.querySelector('.modal-bg');
 
 /**
 * 	The List of stars on the scoreboard
@@ -490,3 +496,4 @@ document.querySelectorAll('.restart').forEach(function(btn) {
 });
 
 document.querySelector(".modal-dismiss-btn").addEventListener('click', closeModal);
+
