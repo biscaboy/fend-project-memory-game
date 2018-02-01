@@ -132,13 +132,16 @@ h1 {
     top: 0;
     left: 0;
     background: rgba(0,0,0,0.5);
-    z-index: 2000;
     min-height: 100%;
     min-width: 100%;
 }
 
-.modal-outer-flex-container .show {
+.modal-show {
     display: flex;
+}
+
+.modal-hide {
+    display: none;
 }
 
 .modal-inner-flex-container {

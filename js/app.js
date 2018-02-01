@@ -7,6 +7,8 @@
 */
 
 // TODO:  1 moves -> 1 move.
+// TODO:  Modal - make it part of the Scoreboard?
+// TODO:  save references to the SB elements in the constructor.
 /**
 *	Class: Scoreboard
 * 	@constructor:
@@ -130,7 +132,7 @@ Scoreboard.prototype.stopGame = function () {
 	document.querySelector('.game-over-stats-time').innerHTML = this.getGameDuration();
 	const starsMsg = (stars.length > 0) ? stars.length : `No stars earned this round`;
 	document.querySelector('.game-over-stats-stars').innerHTML = starsMsg;
-	$('#game-over-modal').modal();
+	modal.classList.add('modal-show');
 }
 
 /**
@@ -436,7 +438,18 @@ const respondToClick = function(evt) {
 * 	@param {EventListener}
 */
 const resetGame = function(evt) {
+	closeModal();
 	cards = initialize();
+}
+
+/**
+* 	@description:  Closes the modal by removing the modal-show class name.
+* 	@param {EventListener}
+*/
+const closeModal = function(evt) {
+	if (modal.classList.contains('modal-show')) {
+		modal.classList.remove('modal-show');
+	}
 }
 
 /**
@@ -448,6 +461,11 @@ const scoreboard = new Scoreboard();
 * 	Deck of cards - all cards hang off this node
 */
 const deckNode = document.querySelector('.deck');
+
+/**
+*	Popup modal for congratualations message
+*/
+const modal = document.querySelector('#game-over-modal');
 
 /**
 * 	The List of stars on the scoreboard
@@ -468,3 +486,5 @@ let cards = initialize();
 document.querySelectorAll('.restart').forEach(function(btn) {
 	btn.addEventListener('click', resetGame);
 });
+
+document.querySelector(".modal-dismiss-btn").addEventListener('click', closeModal);
