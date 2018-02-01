@@ -132,7 +132,12 @@ Scoreboard.prototype.stopGame = function () {
 	document.querySelector('.game-over-stats-time').innerHTML = this.getGameDuration();
 	const starsMsg = (stars.length > 0) ? stars.length : `No stars earned this round`;
 	document.querySelector('.game-over-stats-stars').innerHTML = starsMsg;
-	modal.classList.add('modal-show');
+	cards.forEach(function(card){
+		card.elem.classList.add('game-over');
+	});
+	setTimeout(function(){
+		modal.classList.add('modal-show');
+	},3000);
 }
 
 /**
@@ -222,20 +227,12 @@ Card.prototype.matches = function(otherCard) {
 		match = true;
 		this.state = this.STATE_MATCHED;
 		otherCard.state = otherCard.STATE_MATCHED;
+		setTimeout(function(c1, c2){
+			c1.elem.classList.add('match');
+			c2.elem.classList.add('match');
+		}, 250, this, otherCard);
 	}
 	return match;
-};
-
-/*
-* 	@description: Appends the given class name to the end of the existing class list.
-* 	@param {string} the class to add to the class list for of the Card.
-* 	@returns:
-*/
-Card.prototype.addClass = function(classNameToAdd) {
-	const arr = this.elem.className.split(" ");
-    if (arr.indexOf(classNameToAdd) == -1) {
-        this.elem.className += " " + classNameToAdd;
-    }
 };
 
 /**
@@ -243,8 +240,12 @@ Card.prototype.addClass = function(classNameToAdd) {
 */
 Card.prototype.show = function (){
 	if (this.isHidden()){
-		this.addClass(this.CLASS_OPEN);
-		this.addClass(this.CLASS_SHOW);
+		// open starts the CSS animation
+		this.elem.classList.add(this.CLASS_OPEN);
+		// delay the show for animations
+		setTimeout(function(c) {
+			c.elem.classList.add(c.CLASS_SHOW);
+		}, 250, this);
 		this.state = this.STATE_SHOWING;
 	}
 };
@@ -254,7 +255,10 @@ Card.prototype.show = function (){
 */
 Card.prototype.hide = function (){
 	// TODO: animate the cards
-	this.elem.className = this.CLASS_CARD;
+	this.elem.classList.add('hide');
+	setTimeout(function(c){
+		c.elem.className = c.CLASS_CARD;
+	}, 250, this);
 	this.state = this.STATE_HIDDEN;
 
 }
@@ -379,18 +383,16 @@ function attemptMatch(card1, card2) {
 	if (card1.matches(card2)){
 		// a match!
 		scoreboard.incrementMatches();
-		// TODO: animate the matched cards
 	} else {
 		// no match.
-		// TODO Animate the cards
 		// don't let the player click on anything else while we display cards
 		deckNode.removeEventListener('click', respondToClick);
-		// hide the cards after 1 sec and start listening again for next move.
+		// hide the cards after 1.25 (animation takes .25) sec and start listening again for next move.
 		setTimeout(function (c1, c2) {
 			c1.hide();
 			c2.hide();
 			deckNode.addEventListener('click', respondToClick);
-		}, 1000, card1, card2);
+		}, 1250, card1, card2);
 	}
 	// we tried to match so increment the scoreboard and reset.
 	scoreboard.incrememntMoves();
