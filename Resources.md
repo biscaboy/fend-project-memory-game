@@ -43,57 +43,6 @@ _Matthew Crumley's suggestion:_ https://stackoverflow.com/users/2214/matthew-cru
 https://www.digitalocean.com/community/tutorials/understanding-date-and-time-in-javascript
 https://www.htmlgoodies.com/html5/javascript/calculating-the-difference-between-two-dates-in-javascript.html
 
-#### Code Snippet from [htmlgoodies.com](https://www.htmlgoodies.com/html5/javascript/)calculating-the-difference-between-two-dates-in-javascript.html]
-
-I ended up not using this in the project as it was not that complicated.  But I display it here for safe keeping for a day when I may use Date objects.
-```javascript
-Date.daysBetween = function( date1, date2 ) {
-  //Get 1 day in milliseconds
-  var one_day=1000*60*60*24;
-
-  // Convert both dates to milliseconds
-  var date1_ms = date1.getTime();
-  var date2_ms = date2.getTime();
-
-  // Calculate the difference in milliseconds
-  var difference_ms = date2_ms - date1_ms;
-
-  //take out milliseconds
-  difference_ms = difference_ms/1000;
-  var seconds = Math.floor(difference_ms % 60);
-  difference_ms = difference_ms/60;
-  var minutes = Math.floor(difference_ms % 60);
-  difference_ms = difference_ms/60;
-  var hours = Math.floor(difference_ms % 24);
-  var days = Math.floor(difference_ms/24);
-
-  return days + ' days, ' + hours + ' hours, ' + minutes + ' minutes, and ' + seconds + ' seconds';
-}
-// or
-  // Convert back to days and return
-  //return Math.round(difference_ms/one_day);
-//}
-```
-Date Diff -
-```javascript
- // datepart: 'y', 'm', 'w', 'd', 'h', 'n', 's'
-Date.dateDiff = function(datepart, fromdate, todate) {
-  datepart = datepart.toLowerCase();
-  var diff = todate - fromdate;
-  var divideBy = { w:604800000,
-                   d:86400000,
-                   h:3600000,
-                   n:60000,
-                   s:1000 };
-
-  return Math.floor( diff/divideBy[datepart]);
-}
-//Set the two dates
-var y2k  = new Date(2000, 0, 1);
-var today= new Date();
-console.log('Weeks since the new millenium: ' + Date.dateDiff('w', y2k, today)); //displays 625
-```
-
 ### Interval
 https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval
 https://javascript.info/settimeout-setinterval
