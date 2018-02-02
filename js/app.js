@@ -140,7 +140,6 @@ Scoreboard.prototype.startGame = function() {
 */
 Scoreboard.prototype.getPlayerRank = function() {
 	let rank = this.RANK_ONE;
-	// TODO: update this to use the players success ratio.
 	const successRatio = (this.matches / this.moves) * 100;
 	if (successRatio >= 30) {
 		rank = this.RANK_TWO;
@@ -311,7 +310,6 @@ Card.prototype.show = function (){
 * 	@description Flip the card over to a hidden state
 */
 Card.prototype.hide = function (){
-	// TODO: animate the cards
 	this.elem.classList.add('hide');
 	setTimeout(function(c){
 		c.elem.className = c.CLASS_CARD;
