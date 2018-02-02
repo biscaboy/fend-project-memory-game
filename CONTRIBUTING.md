@@ -1,3 +1,8 @@
-# How to contribute
+# How to Contribute
 
-The files in this repository are used as the starting point for all students. Because we want students to write the majority of the code themselves, pull requests (most likely) will _not_ be merged into the project.
+If you want to fork this project and add some functionality, please be my guest.  I would love to collaborate with you.
+
+## Source
+
+This project is based on the [UDACITY Front End Nanodegree Project Memory Game](https://github.com/udacity/fend-project-memory-game.git).
+

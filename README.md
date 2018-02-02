@@ -2,19 +2,40 @@
 
 ## Table of Contents
 
+* [Overview](#overview)
 * [Instructions](#instructions)
 * [Contributing](#contributing)
+* [Resources](#resources)
+
+## Overview
+
+This Memory Card Game is a study project for the [Udacity Front-End Nanodegree](https://www.udacity.com/course/front-end-web-developer-nanodegree--nd001).
+
+The Memory Game is single web page that displays game like you used to play in nursery school with a set of cards that are matched into pairs.
 
 ## Instructions
 
-The starter project has some HTML and CSS styling to display a static version of the Memory Game project. You'll need to convert this project from a static project to an interactive one. This will require modifying the HTML and CSS files, but primarily the JavaScript file.
+Download the project into a folder and then open `index.html` in a [suggested browser](#suggested-browsers).
 
-To get started, open `js/app.js` and start building out the app's functionality
+In the game, click on cards to open them and try to find a match!
 
-For specific, detailed instructions, look at the project instructions in the [Udacity Classroom](https://classroom.udacity.com/me).
+Once all the matches are found, a status report displays with a **Start Over** button to replay.  Enjoy!
+
+### Suggested Browsers
+
+The game work best in the following browsers (version tested):
+
+- Chrome (v.63)
+- FireFox (v.58)
+- FireFoxDeveloperEdition (v.58)
+- Brave (v.0.20.30)
 
 ## Contributing
 
-This repository is the starter code for _all_ Udacity students. Therefore, we most likely will not accept pull requests.
+This repository is based on the [starter code from Udacity](https://github.com/udacity/fend-project-memory-game). You cannot contribute to the source project, but you can contribute to this one if you wish.
 
 For details, check out [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Resources
+
+I kept a running list of [resources](RESOURCES.md) that I used as a student to learn about HTML, CSS and Javascript.
