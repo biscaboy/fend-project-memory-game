@@ -8,8 +8,8 @@
 
 /**
 *	Class: Scoreboard
-* 	@constructor:
-* 	@description: Tracks and displays player moves, stars and game timer.
+* 	@constructor
+* 	@description Tracks and displays player moves, stars and game timer.
 */
 const Scoreboard = function() {
 	this.counterElem = document.querySelector('.moves');
@@ -22,8 +22,8 @@ const Scoreboard = function() {
 }
 
 /**
-* 	@description: provides the elapsed time from the start of the game
-* 	@returns: a formatted string in minutes and seconds (mm:ss).
+* 	@description provides the elapsed time from the start of the game
+* 	@returns a formatted string in minutes and seconds (mm:ss).
 */
 Scoreboard.prototype.getGameDuration = function() {
 	const mins = Math.floor(this.elapsedTime / 60);
@@ -35,7 +35,7 @@ Scoreboard.prototype.getGameDuration = function() {
 }
 
 /**
-* 	@description: Begins an Interval that counts the game time,
+* 	@description Begins an Interval that counts the game time,
 *	displays it and updates it.
 */
 Scoreboard.prototype.startClock = function() {
@@ -51,14 +51,14 @@ Scoreboard.prototype.startClock = function() {
 }
 
 /**
-* 	@description: Stops the game clock
+* 	@description Stops the game clock
 */
 Scoreboard.prototype.stopClock = function() {
 	clearInterval(this.clockInterval);
 }
 
 /**
-* 	@description: Updates the scoreboard with a move.
+* 	@description Updates the scoreboard with a move.
 *	A move consists of turing over two cards.
 */
 Scoreboard.prototype.incrememntMoves = function() {
@@ -78,7 +78,7 @@ Scoreboard.prototype.incrememntMoves = function() {
 }
 
 /**
-* 	@description: Updates by one the matches count.
+* 	@description Updates by one the matches count.
 * 	A match is made when two cards of with the same
 *	symbol are turned over and displayed.
 */
@@ -87,7 +87,7 @@ Scoreboard.prototype.incrementMatches = function() {
 }
 
 /**
-* 	@description: Accessor method to the current number of matched pairs of cards.
+* 	@description Accessor method to the current number of matched pairs of cards.
 * 	@returns: the latest matches count saved in the scoreboard.
 */
 Scoreboard.prototype.getMatches = function() {
@@ -95,7 +95,7 @@ Scoreboard.prototype.getMatches = function() {
 }
 
 /**
-* 	@description:  Begins the game by clearing the number of moves
+* 	@description  Begins the game by clearing the number of moves
 *	and starting the clock.
 */
 Scoreboard.prototype.startGame = function() {
@@ -105,14 +105,12 @@ Scoreboard.prototype.startGame = function() {
 }
 
 /**
-* 	@description:  Stops the game clock, and displays a modal Congratulations message.
-* 	@param:
-* 	@returns:
+* 	@description  Stops the game clock, and displays a modal Congratulations message.
 */
 Scoreboard.prototype.stopGame = function () {
 	this.stopClock();
 	// display modal with winning stats.
-		let rank = 'seeker';
+		let rank = 'trainee';
 	const stars = document.querySelectorAll('.stars li');
 	switch (stars.length) {
 		case 3:
@@ -127,8 +125,7 @@ Scoreboard.prototype.stopGame = function () {
 	document.querySelector('.game-ranking').innerHTML = rank;
 	document.querySelector('.game-over-stats-moves').innerHTML = this.moves;
 	document.querySelector('.game-over-stats-time').innerHTML = this.getGameDuration();
-	const starsMsg = (stars.length > 0) ? stars.length : `No stars earned this round`;
-	document.querySelector('.game-over-stats-stars').innerHTML = starsMsg;
+	document.querySelector('.game-over-stats-stars').innerHTML = stars.length;
 	cards.forEach(function(card){
 		card.elem.classList.add('game-over');
 	});
@@ -141,7 +138,7 @@ Scoreboard.prototype.stopGame = function () {
 /**
 * 	Class: Card
 *	@constructor
-* 	@description: Represents a memory card on the playing board.
+* 	@description Represents a playing card on the playing board.
 ** 	A Card has the following properties:
 * 	symbol - The symbol to match
 * 	state - closed (-1), open (0), matched (1)
@@ -155,7 +152,7 @@ const Card = function (id, symbol, parent){
 	const e = document.createElement(this.SYMBOL_ELEMENT_TYPE);
 	e.className = this.FA_PREFIX + symbol;
 	this.elem = document.createElement(this.CARD_ELEMENT_TYPE);
-	this.elem.className = this.CLASS_CARD + ' ' + this.CLASS_SHOW;
+	this.elem.className = this.CLASS_CARD;
 	this.elem.appendChild(e);
 };
 
@@ -189,7 +186,7 @@ Card.prototype.symbols = [
 ];
 
 /**
-*	@description: Indicates if the card is currently showing on the board.
+*	@description Indicates if the card is currently showing on the board.
 * 	@returns  {boolean}  true if showing otherwise false.
 */
 Card.prototype.isShowing = function () {
@@ -197,7 +194,7 @@ Card.prototype.isShowing = function () {
 }
 
 /**
-* 	@description: Indicates if the card is currently hidden or facing down on the board
+* 	@description Indicates if the card is currently hidden or facing down on the board
 * 	@returns {boolean} true if hidden, otherwise false.
 */
 Card.prototype.isHidden = function () {
@@ -205,7 +202,7 @@ Card.prototype.isHidden = function () {
 }
 
 /**
-* 	@description:  Indicates if the card has been matched in a pair.
+* 	@description  Indicates if the card has been matched in a pair.
 * 	@returns {boolean} true if matched, otherwise false.
 */
 Card.prototype.isMatched = function () {
@@ -214,7 +211,7 @@ Card.prototype.isMatched = function () {
 
 
 /**
-*   @description: Compares symbols on the cards and determines a match.
+*   @description Compares symbols on the cards and determines a match.
 *  	If the cards match, update both cards state to "matched";
 * 	@param {Card} the card to compare to this Card.
 * 	@returns {boolean} true if the cards match, false if not.
@@ -234,7 +231,7 @@ Card.prototype.matches = function(otherCard) {
 };
 
 /**
-* 	@description: Flip the card around to display on the game board.
+* 	@description Flip the card around to display on the game board.
 */
 Card.prototype.show = function (){
 	if (this.isHidden()){
@@ -249,7 +246,7 @@ Card.prototype.show = function (){
 };
 
 /**
-* 	@description: Flip the card over to a hidden state
+* 	@description Flip the card over to a hidden state
 */
 Card.prototype.hide = function (){
 	// TODO: animate the cards
@@ -262,11 +259,11 @@ Card.prototype.hide = function (){
 }
 
 /*
-*  	@description: Create a list that holds all of your cards
+*  	@description Create a list that holds all of your cards
 *	Loops through the set of symbols and creates
 * 	a pair of cards for each symbol in the stack
 * 	@param {Node} the DOM Node to use as a parent to display Card in the DOM.
-* 	@returns:
+* 	@returns {Array} Card objects
 */
 function createCards(parentNode) {
 	const cards = [];
@@ -283,7 +280,7 @@ function createCards(parentNode) {
 }
 
 /*
-*  	@description: Create an array of star elements
+*  	@description Create an array of star elements
 *	@returns {Array} Elements of list items with a FA star as their class
 */
 function createStars() {
@@ -301,9 +298,9 @@ function createStars() {
 }
 
 /*
-* 	@description: randomly shuffles the elements of a given array
+* 	@description randomly shuffles the elements of a given array
 *	Shuffle function from http://stackoverflow.com/a/2450976
-* 	@param: the array whose contents will be shuffled.
+* 	@param the array whose contents will be shuffled.
 * 	@returns {Array} the shuffled array
 */
 function shuffle(array) {
@@ -321,7 +318,7 @@ function shuffle(array) {
 }
 
 /**
-* 	@description: Set up the game by creating cards and shuffling them.
+* 	@description Set up the game by creating cards and shuffling them.
 *  	Then display the cards on the board and start the game.
 	@return {Array} an array of Card objects
 */
@@ -418,7 +415,7 @@ const handleCardClick = function(card) {
 }
 
 /**
-* 	@description:  Loops through the cards in the game, if one has been clicked handle it.
+* 	@description  Loops through the cards in the game, if one has been clicked handle it.
 * 	@param {EventListener}
 */
 const respondToClick = function(evt) {
@@ -434,7 +431,7 @@ const respondToClick = function(evt) {
 }
 
 /**
-* 	@description:  Starts the game over clearing the scoreboard and reshuffling the deck
+* 	@description  Starts the game over clearing the scoreboard and reshuffling the deck
 * 	@param {EventListener}
 */
 const resetGame = function(evt) {
@@ -443,7 +440,7 @@ const resetGame = function(evt) {
 }
 
 /**
-* 	@description:  Closes the modal by removing the modal-show class name.
+* 	@description  Closes the modal by removing the modal-show class name.
 * 	@param {EventListener}
 */
 const closeModal = function(evt) {
@@ -495,5 +492,6 @@ document.querySelectorAll('.restart').forEach(function(btn) {
 	btn.addEventListener('click', resetGame);
 });
 
+// listens for clicks on the little "x" on the modal window.
 document.querySelector(".modal-dismiss-btn").addEventListener('click', closeModal);
 
