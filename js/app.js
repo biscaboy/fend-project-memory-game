@@ -102,6 +102,7 @@ Scoreboard.prototype.incrementMoves = function() {
 			setTimeout(function(star){
 				star.parentElement.removeChild(star);
 			}, 500, starToRemove);
+			stars.pop();
 		}
 	}
 }
