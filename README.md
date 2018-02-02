@@ -48,4 +48,4 @@ For details, check out [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Resources
 
-I kept a running list of [resources](RESOURCES.md) that I used as a student to learn about HTML, CSS and Javascript.
+I kept a running list of [resources](Resources.md) that I used as a student to learn about HTML, CSS and Javascript.
