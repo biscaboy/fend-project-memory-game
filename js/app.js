@@ -97,8 +97,11 @@ Scoreboard.prototype.incrementMoves = function() {
 	if (this.moves > 6 && this.moves % 2 == 0 && (this.matches / this.moves < 0.25)) {
 		const starToRemove = document.querySelector(Star.prototype.CLASS_SELECTOR);
 		if (starToRemove){
-			// TODO: insert an animation here.
-			starToRemove.parentElement.removeChild(starToRemove);
+			// animate the star and make it disappear.
+			starToRemove.classList.add('star-pop');
+			setTimeout(function(star){
+				star.parentElement.removeChild(star);
+			}, 500, starToRemove);
 		}
 	}
 }

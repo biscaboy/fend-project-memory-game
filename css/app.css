@@ -123,7 +123,10 @@ h3 {
 .score-panel ul {
     padding: 0;
     margin: 0;
+    min-width: 100px;
+    text-align: left;
 }
+
 .score-panel .stars li {
     list-style: none;
     display: inline-flex;
@@ -131,6 +134,13 @@ h3 {
 
 .score-panel .stars i {
     color: #daa520;
+}
+
+.star-pop {
+    animation-name: star-disappear;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
 }
 
 .score-panel .timer,
@@ -594,4 +604,21 @@ h3 {
     100% {
         transform: scale(1.0);
     }
+}
+
+@keyframes star-disappear {
+
+    0% {
+        transform: scale(1.0);
+    }
+
+    50% {
+        transform: scale(2.0);
+    }
+
+    100% {
+        transform: scale(0);
+        font-size: 0;
+    }
+
 }
