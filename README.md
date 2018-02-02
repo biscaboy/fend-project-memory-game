@@ -15,11 +15,21 @@ The Memory Game is single web page that displays game like you used to play in n
 
 ## Instructions
 
-Download the project into a folder and then open `index.html` in a [suggested browser](#suggested-browsers).
+### Playing the Game
 
-In the game, click on cards to open them and try to find a match!
+Click on cards to turn them over and try to find a match.
 
 Once all the matches are found, a status report displays with a **Start Over** button to replay.  Enjoy!
+
+Please use a [suggested browser](#suggested-browsers).
+
+### Play Online
+
+[Play the game!](https://biscaboy.github.io/fend-project-memory-game/)
+
+### Download
+
+Download the project into a folder and then open `index.html`.
 
 ### Suggested Browsers
 
