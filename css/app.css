@@ -325,6 +325,14 @@ h3 {
         font-size: 14px;
         width: 285px;
     }
+
+    .score-panel ul {
+        min-width: 50px;
+    }
+
+    .score-panel .timer {
+        min-width: 50px;
+    }
 }
 
 /* Animations */
