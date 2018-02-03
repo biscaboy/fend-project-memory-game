@@ -96,7 +96,8 @@ Scoreboard.prototype.incrementMoves = function() {
 	// document.querySelector('.success-ratio').innerHTML = Math.floor((this.matches / this.moves) * 100) + '%';
 	if (this.moves > 6 && this.moves % 2 == 0 && (this.matches / this.moves < 0.25)) {
 		const starToRemove = document.querySelector(Star.prototype.CLASS_SELECTOR);
-		if (starToRemove){
+		// don't delete all the stars - there should be 1 to 3 stars on the board.
+		if (starToRemove && stars.length > 1){
 			// animate the star and make it disappear.
 			starToRemove.classList.add('star-pop');
 			setTimeout(function(star){
